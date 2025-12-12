@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: platform-templates
+  description: Platform engineering templates
+spec:
+  targets:
+    - ./nodejs-api/template.yaml
+    # Add more templates here later

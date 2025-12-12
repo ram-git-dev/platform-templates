@@ -1,0 +1,25 @@
+{
+  "name": "${{ values.name }}",
+  "version": "1.0.0",
+  "description": "${{ values.description }}",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    {% if values.needsDatabase %}
+    "pg": "^8.11.0",
+    {% endif %}
+    {% if values.needsRedis %}
+    "redis": "^4.6.7",
+    {% endif %}
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.6.1"
+  }
+}

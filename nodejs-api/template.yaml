@@ -1,0 +1,93 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: nodejs-api
+  title: Node.js API Service
+  description: Create a new Node.js Express API with PostgreSQL
+  tags:
+    - nodejs
+    - api
+    - express
+spec:
+  owner: platform-team
+  type: service
+  
+  parameters:
+    - title: Service Information
+      required:
+        - name
+        - description
+        - owner
+      properties:
+        name:
+          title: Service Name
+          type: string
+          description: Unique name for the service (lowercase, hyphens only)
+          pattern: '^[a-z0-9-]+$'
+          ui:autofocus: true
+        
+        description:
+          title: Description
+          type: string
+          description: What does this service do?
+        
+        owner:
+          title: Owner
+          type: string
+          description: Team or person owning this service
+          default: platform-team
+    
+    - title: Configuration
+      properties:
+        needsDatabase:
+          title: Needs Database
+          type: boolean
+          default: true
+          description: Provision PostgreSQL database?
+        
+        needsRedis:
+          title: Needs Redis
+          type: boolean
+          default: false
+          description: Provision Redis cache?
+  
+  steps:
+    # Step 1: Fetch template files
+    - id: fetch-base
+      name: Fetch Base Template
+      action: fetch:template
+      input:
+        url: ./skeleton
+        values:
+          name: ${{ parameters.name }}
+          description: ${{ parameters.description }}
+          owner: ${{ parameters.owner }}
+          needsDatabase: ${{ parameters.needsDatabase }}
+          needsRedis: ${{ parameters.needsRedis }}
+    
+    # Step 2: Create GitHub repository
+    - id: publish
+      name: Publish to GitHub
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: ${{ parameters.description }}
+        repoUrl: github.com?owner=<your-username>&repo=${{ parameters.name }}
+        defaultBranch: main
+        repoVisibility: public
+    
+    # Step 3: Register in catalog
+    - id: register
+      name: Register Component
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+  
+  output:
+    links:
+      - title: Repository
+        url: ${{ steps.publish.output.remoteUrl }}
+      - title: Open in Catalog
+        icon: catalog
+        entityRef: ${{ steps.register.output.entityRef }}
