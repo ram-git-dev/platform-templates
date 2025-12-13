@@ -72,7 +72,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: ${{ parameters.description }}
-        repoUrl: github.com?owner=<your-username>&repo=${{ parameters.name }}
+        repoUrl: github.com?owner=ram-git-dev&repo=${{ parameters.name }}
         defaultBranch: main
         repoVisibility: public
     
