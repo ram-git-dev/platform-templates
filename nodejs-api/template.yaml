@@ -9,7 +9,7 @@ metadata:
     - api
     - express
 spec:
-  owner: platform-team
+  owner: user:default/ram-git-dev
   type: service
   
   parameters:
@@ -35,7 +35,7 @@ spec:
           title: Owner
           type: string
           description: Team or person owning this service
-          default: platform-team
+          default: user:default/ram-git-dev
     
     - title: Configuration
       properties:
