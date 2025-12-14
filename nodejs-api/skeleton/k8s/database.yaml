@@ -1,0 +1,11 @@
+{% if values.needsDatabase %}
+apiVersion: database.platform.io/v1alpha1
+kind: PostgreSQLInstance
+metadata:
+  name: ${{ values.name }}-db
+  namespace: ${{ values.name }}
+spec:
+  parameters:
+    size: small
+    storageGB: 10
+{% endif %}

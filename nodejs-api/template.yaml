@@ -83,6 +83,39 @@ spec:
       input:
         repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
+    
+    # Step: Create PR to GitOps repo
+    - id: create-gitops-pr
+      name: Create GitOps PR
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?owner=<your-username>&repo=gitops-manifests
+        branchName: add-${{ parameters.name }}
+        title: 'Add ${{ parameters.name }} to GitOps'
+        description: |
+          ## New Service: ${{ parameters.name }}
+          
+          **Description:** ${{ parameters.description }}
+          
+          **Owner:** ${{ parameters.owner }}
+          
+          **Includes:**
+          - Namespace
+          {% if parameters.needsDatabase %}
+          - PostgreSQL database (via Crossplane)
+          {% endif %}
+          - Deployment
+          - Service
+          
+          This PR adds Kubernetes manifests for the new service.
+          
+          **Next steps after merge:**
+          1. Flux will detect changes within 1 minute
+          2. Crossplane will provision database (if requested)
+          3. Application will be deployed automatically
+        
+        sourcePath: k8s
+        targetPath: apps/${{ parameters.name }}
   
   output:
     links:
@@ -91,3 +124,5 @@ spec:
       - title: Open in Catalog
         icon: catalog
         entityRef: ${{ steps.register.output.entityRef }}
+      - title: GitOps PR
+        url: ${{ steps['create-gitops-pr'].output.remoteUrl }}
