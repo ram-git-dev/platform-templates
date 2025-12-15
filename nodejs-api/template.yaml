@@ -70,7 +70,6 @@ spec:
       name: Publish to GitHub
       action: publish:github
       input:
-        allowedHosts: ['github.com']
         description: ${{ parameters.description }}
         repoUrl: github.com?owner=ram-git-dev&repo=${{ parameters.name }}
         defaultBranch: main
@@ -84,12 +83,12 @@ spec:
         repoContentsUrl: ${{ steps.publish.output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
     
-    # Step: Create PR to GitOps repo
+    # Step 4: Create PR to GitOps repo
     - id: create-gitops-pr
       name: Create GitOps PR
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?owner=<your-username>&repo=gitops-manifests
+        repoUrl: github.com?owner=ram-git-dev&repo=gitops-manifests
         branchName: add-${{ parameters.name }}
         title: 'Add ${{ parameters.name }} to GitOps'
         description: |
@@ -113,7 +112,6 @@ spec:
           1. Flux will detect changes within 1 minute
           2. Crossplane will provision database (if requested)
           3. Application will be deployed automatically
-        
         sourcePath: k8s
         targetPath: apps/${{ parameters.name }}
   
