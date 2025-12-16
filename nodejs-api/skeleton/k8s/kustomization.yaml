@@ -3,7 +3,12 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
+  - deployment.yaml
+  - servicemonitor.yaml
+  - rbac.yaml
+  - alerts.yaml
+  - team-dashboard.yaml
 {% if values.needsDatabase %}
   - database.yaml
 {% endif %}
-  - deployment.yaml
+ 
