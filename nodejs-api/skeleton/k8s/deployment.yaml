@@ -4,6 +4,7 @@ metadata:
   name: ${{ values.name }}
   labels:
     app: ${{ values.name }}
+  namespace: ${{ values.name }}
 spec:
   replicas: 2
   selector:
@@ -61,6 +62,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ${{ values.name }}
+  namespace: ${{ values.name }}
 spec:
   selector:
     app: ${{ values.name }}
