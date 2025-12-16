@@ -16,7 +16,9 @@
     {% if values.needsRedis %}
     "redis": "^4.6.7",
     {% endif %}
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "prom-client": "^15.0.0",
+    "pino": "^8.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",

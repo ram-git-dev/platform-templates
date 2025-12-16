@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ values.name }}-dashboard
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  {{ values.name }}-dashboard.json: |
+    {
+      "dashboard": {
+        "title": "{{ values.name }} - Application Metrics",
+        "tags": ["{{ values.name }}", "application"],
+        "timezone": "browser",
+        "panels": [
+          {
+            "title": "Pod CPU Usage",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "rate(container_cpu_usage_seconds_total{namespace=\"{{ values.name }}\",pod=~\"{{ values.name }}-.*\"}[5m])",
+                "legendFormat": "{{ "{{" }}pod{{ "}}" }}"
+              }
+            ]
+          },
+          {
+            "title": "Pod Memory Usage",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "container_memory_usage_bytes{namespace=\"{{ values.name }}\",pod=~\"{{ values.name }}-.*\"}",
+                "legendFormat": "{{ "{{" }}pod{{ "}}" }}"
+              }
+            ]
+          },
+          {
+            "title": "HTTP Request Rate",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "rate(http_requests_total{namespace=\"{{ values.name }}\"}[5m])",
+                "legendFormat": "{{ "{{" }}method{{ "}}" }} {{ "{{" }}path{{ "}}" }}"
+              }
+            ]
+          },
+          {
+            "title": "HTTP Error Rate",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "rate(http_requests_total{namespace=\"{{ values.name }}\",status=~\"5..\"}[5m])",
+                "legendFormat": "5xx Errors"
+              }
+            ]
+          },
+          {
+            "title": "Pod Restart Count",
+            "type": "stat",
+            "gridPos": {"x": 0, "y": 16, "w": 6, "h": 4},
+            "targets": [
+              {
+                "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"{{ values.name }}\"})",
+                "legendFormat": "Restarts"
+              }
+            ]
+          },
+          {
+            "title": "Available Replicas",
+            "type": "stat",
+            "gridPos": {"x": 6, "y": 16, "w": 6, "h": 4},
+            "targets": [
+              {
+                "expr": "kube_deployment_status_replicas_available{namespace=\"{{ values.name }}\"}",
+                "legendFormat": "Available"
+              }
+            ]
+          },
+          {
+            "title": "Database Connections",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 20, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "pg_stat_activity_count{namespace=\"{{ values.name }}\"}",
+                "legendFormat": "Active Connections"
+              }
+            ]
+          },
+          {
+            "title": "Application Logs (Last 100)",
+            "type": "logs",
+            "gridPos": {"x": 12, "y": 20, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "{namespace=\"{{ values.name }}\",app=\"{{ values.name }}\"}"
+              }
+            ]
+          }
+        ],
+        "refresh": "30s",
+        "time": {"from": "now-1h", "to": "now"}
+      }
+    }

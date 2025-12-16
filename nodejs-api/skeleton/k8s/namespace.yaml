@@ -1,4 +1,105 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: ${{ values.name }}
+  name: {{ values.name }}
+  labels:
+    app: {{ values.name }}
+    owner: {{ values.owner }}
+    managed-by: backstage
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: {{ values.name }}-quota
+  namespace: {{ values.name }}
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: 8Gi
+    limits.cpu: "8"
+    limits.memory: 16Gi
+    persistentvolumeclaims: "5"
+    pods: "20"
+    services: "10"
+    configmaps: "20"
+    secrets: "20"
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: {{ values.name }}-limits
+  namespace: {{ values.name }}
+spec:
+  limits:
+  - max:
+      cpu: "2"
+      memory: 4Gi
+    min:
+      cpu: 50m
+      memory: 64Mi
+    default:
+      cpu: 500m
+      memory: 512Mi
+    defaultRequest:
+      cpu: 100m
+      memory: 128Mi
+    type: Container
+  - max:
+      cpu: "4"
+      memory: 8Gi
+    min:
+      cpu: 100m
+      memory: 128Mi
+    type: Pod
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ values.name }}-default-deny
+  namespace: {{ values.name }}
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  egress:
+  - to:
+    - namespaceSelector: {}
+  - ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ values.name }}-allow-same-namespace
+  namespace: {{ values.name }}
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector: {}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ values.name }}-allow-database
+  namespace: {{ values.name }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ values.name }}
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgresql
+    ports:
+    - protocol: TCP
+      port: 5432
