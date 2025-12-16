@@ -1,93 +1,93 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: {{ values.name }}-alerts
-  namespace: {{ values.name }}
+  name: ${{ values.name }}-alerts
+  namespace: ${{ values.name }}
   labels:
-    app: {{ values.name }}
+    app: ${{ values.name }}
     release: kube-prometheus-stack
 spec:
   groups:
-  - name: {{ values.name }}.rules
+  - name: ${{ values.name }}.rules
     interval: 30s
     rules:
     # Alert: Pod is down
     - alert: PodDown
-      expr: up{namespace="{{ values.name }}", job="{{ values.name }}"} == 0
+      expr: up{namespace="${{ values.name }}", job="${{ values.name }}"} == 0
       for: 5m
       labels:
         severity: critical
-        app: {{ values.name }}
+        app: ${{ values.name }}
       annotations:
-        summary: "Pod {{ values.name }} is down"
+        summary: "Pod ${{ values.name }} is down"
         description: "Pod has been down for more than 5 minutes"
     
     # Alert: High CPU usage
     - alert: HighCPUUsage
-      expr: rate(container_cpu_usage_seconds_total{namespace="{{ values.name }}"}[5m]) > 0.8
+      expr: rate(container_cpu_usage_seconds_total{namespace="${{ values.name }}"}[5m]) > 0.8
       for: 10m
       labels:
         severity: warning
-        app: {{ values.name }}
+        app: ${{ values.name }}
       annotations:
-        summary: "High CPU usage in {{ values.name }}"
+        summary: "High CPU usage in ${{ values.name }}"
         description: "CPU usage is above 80% for more than 10 minutes"
     
     # Alert: High memory usage
     - alert: HighMemoryUsage
       expr: |
-        (container_memory_usage_bytes{namespace="{{ values.name }}"} / 
-         container_spec_memory_limit_bytes{namespace="{{ values.name }}"}) > 0.85
+        (container_memory_usage_bytes{namespace="${{ values.name }}"} / 
+         container_spec_memory_limit_bytes{namespace="${{ values.name }}"}) > 0.85
       for: 10m
       labels:
         severity: warning
-        app: {{ values.name }}
+        app: ${{ values.name }}
       annotations:
-        summary: "High memory usage in {{ values.name }}"
+        summary: "High memory usage in ${{ values.name }}"
         description: "Memory usage is above 85% of limit"
     
     # Alert: Pod restarts
     - alert: PodRestarting
-      expr: rate(kube_pod_container_status_restarts_total{namespace="{{ values.name }}"}[15m]) > 0
+      expr: rate(kube_pod_container_status_restarts_total{namespace="${{ values.name }}"}[15m]) > 0
       for: 5m
       labels:
         severity: warning
-        app: {{ values.name }}
+        app: ${{ values.name }}
       annotations:
-        summary: "Pod is restarting in {{ values.name }}"
+        summary: "Pod is restarting in ${{ values.name }}"
         description: "Pod {{ "{{" }}$labels.pod{{ "}}" }} has restarted {{ "{{" }}$value{{ "}}" }} times in the last 15 minutes"
     
     # Alert: High error rate
     - alert: HighErrorRate
       expr: |
-        rate(http_requests_total{namespace="{{ values.name }}", status=~"5.."}[5m]) /
-        rate(http_requests_total{namespace="{{ values.name }}"}[5m]) > 0.05
+        rate(http_requests_total{namespace="${{ values.name }}", status=~"5.."}[5m]) /
+        rate(http_requests_total{namespace="${{ values.name }}"}[5m]) > 0.05
       for: 5m
       labels:
         severity: critical
-        app: {{ values.name }}
+        app: ${{ values.name }}
       annotations:
-        summary: "High error rate in {{ values.name }}"
+        summary: "High error rate in ${{ values.name }}"
         description: "Error rate is above 5% for {{ "{{" }}$labels.method{{ "}}" }} {{ "{{" }}$labels.path{{ "}}" }}"
     
     # Alert: Deployment has no replicas available
     - alert: DeploymentReplicasUnavailable
-      expr: kube_deployment_status_replicas_available{namespace="{{ values.name }}"} == 0
+      expr: kube_deployment_status_replicas_available{namespace="${{ values.name }}"} == 0
       for: 5m
       labels:
         severity: critical
-        app: {{ values.name }}
+        app: ${{ values.name }}
       annotations:
-        summary: "Deployment {{ values.name }} has no available replicas"
+        summary: "Deployment ${{ values.name }} has no available replicas"
         description: "All pods are down"
     
     # Alert: Database connection issues
     - alert: DatabaseConnectionHigh
-      expr: pg_stat_activity_count{namespace="{{ values.name }}"} > 80
+      expr: pg_stat_activity_count{namespace="${{ values.name }}"} > 80
       for: 10m
       labels:
         severity: warning
-        app: {{ values.name }}
+        app: ${{ values.name }}
       annotations:
-        summary: "High database connections for {{ values.name }}"
+        summary: "High database connections for ${{ values.name }}"
         description: "Database has {{ "{{" }}$value{{ "}}" }} active connections"

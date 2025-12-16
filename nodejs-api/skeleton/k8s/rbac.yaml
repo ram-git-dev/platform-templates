@@ -2,17 +2,17 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ values.name }}
-  namespace: {{ values.name }}
+  name: ${{ values.name }}
+  namespace: ${{ values.name }}
   labels:
-    app: {{ values.name }}
+    app: ${{ values.name }}
 ---
 # Developer Role - can view and debug but not modify production
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ values.name }}-developer
-  namespace: {{ values.name }}
+  name: ${{ values.name }}-developer
+  namespace: ${{ values.name }}
 rules:
 - apiGroups: [""]
   resources: ["pods", "pods/log", "pods/status"]
@@ -31,8 +31,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ values.name }}-admin
-  namespace: {{ values.name }}
+  name: ${{ values.name }}-admin
+  namespace: ${{ values.name }}
 rules:
 - apiGroups: ["*"]
   resources: ["*"]
@@ -42,23 +42,23 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ values.name }}-app-binding
-  namespace: {{ values.name }}
+  name: ${{ values.name }}-app-binding
+  namespace: ${{ values.name }}
 subjects:
 - kind: ServiceAccount
-  name: {{ values.name }}
-  namespace: {{ values.name }}
+  name: ${{ values.name }}
+  namespace: ${{ values.name }}
 roleRef:
   kind: Role
-  name: {{ values.name }}-app
+  name: ${{ values.name }}-app
   apiGroup: rbac.authorization.k8s.io
 ---
 # Minimal app permissions
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ values.name }}-app
-  namespace: {{ values.name }}
+  name: ${{ values.name }}-app
+  namespace: ${{ values.name }}
 rules:
 - apiGroups: [""]
   resources: ["secrets", "configmaps"]

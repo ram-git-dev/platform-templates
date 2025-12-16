@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ values.name }}
+  name: ${{ values.name }}
   labels:
-    app: {{ values.name }}
+    app: ${{ values.name }}
     owner: {{ values.owner }}
     managed-by: backstage
 ---
 apiVersion: v1
 kind: ResourceQuota
 metadata:
-  name: {{ values.name }}-quota
-  namespace: {{ values.name }}
+  name: ${{ values.name }}-quota
+  namespace: ${{ values.name }}
 spec:
   hard:
     requests.cpu: "4"
@@ -27,8 +27,8 @@ spec:
 apiVersion: v1
 kind: LimitRange
 metadata:
-  name: {{ values.name }}-limits
-  namespace: {{ values.name }}
+  name: ${{ values.name }}-limits
+  namespace: ${{ values.name }}
 spec:
   limits:
   - max:
@@ -55,8 +55,8 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ values.name }}-default-deny
-  namespace: {{ values.name }}
+  name: ${{ values.name }}-default-deny
+  namespace: ${{ values.name }}
 spec:
   podSelector: {}
   policyTypes:
@@ -74,8 +74,8 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ values.name }}-allow-same-namespace
-  namespace: {{ values.name }}
+  name: ${{ values.name }}-allow-same-namespace
+  namespace: ${{ values.name }}
 spec:
   podSelector: {}
   policyTypes:
@@ -87,12 +87,12 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ values.name }}-allow-database
-  namespace: {{ values.name }}
+  name: ${{ values.name }}-allow-database
+  namespace: ${{ values.name }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ values.name }}
+      app: ${{ values.name }}
   policyTypes:
   - Egress
   egress:

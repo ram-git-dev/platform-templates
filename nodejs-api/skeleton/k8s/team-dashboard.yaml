@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ values.name }}-dashboard
+  name: ${{ values.name }}-dashboard
   namespace: monitoring
   labels:
     grafana_dashboard: "1"
 data:
-  {{ values.name }}-dashboard.json: |
+  ${{ values.name }}-dashboard.json: |
     {
       "dashboard": {
-        "title": "{{ values.name }} - Application Metrics",
-        "tags": ["{{ values.name }}", "application"],
+        "title": "${{ values.name }} - Application Metrics",
+        "tags": ["${{ values.name }}", "application"],
         "timezone": "browser",
         "panels": [
           {
@@ -19,7 +19,7 @@ data:
             "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
             "targets": [
               {
-                "expr": "rate(container_cpu_usage_seconds_total{namespace=\"{{ values.name }}\",pod=~\"{{ values.name }}-.*\"}[5m])",
+                "expr": "rate(container_cpu_usage_seconds_total{namespace=\"${{ values.name }}\",pod=~\"${{ values.name }}-.*\"}[5m])",
                 "legendFormat": "{{ "{{" }}pod{{ "}}" }}"
               }
             ]
@@ -30,7 +30,7 @@ data:
             "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
             "targets": [
               {
-                "expr": "container_memory_usage_bytes{namespace=\"{{ values.name }}\",pod=~\"{{ values.name }}-.*\"}",
+                "expr": "container_memory_usage_bytes{namespace=\"${{ values.name }}\",pod=~\"${{ values.name }}-.*\"}",
                 "legendFormat": "{{ "{{" }}pod{{ "}}" }}"
               }
             ]
@@ -41,7 +41,7 @@ data:
             "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
             "targets": [
               {
-                "expr": "rate(http_requests_total{namespace=\"{{ values.name }}\"}[5m])",
+                "expr": "rate(http_requests_total{namespace=\"${{ values.name }}\"}[5m])",
                 "legendFormat": "{{ "{{" }}method{{ "}}" }} {{ "{{" }}path{{ "}}" }}"
               }
             ]
@@ -52,7 +52,7 @@ data:
             "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8},
             "targets": [
               {
-                "expr": "rate(http_requests_total{namespace=\"{{ values.name }}\",status=~\"5..\"}[5m])",
+                "expr": "rate(http_requests_total{namespace=\"${{ values.name }}\",status=~\"5..\"}[5m])",
                 "legendFormat": "5xx Errors"
               }
             ]
@@ -63,7 +63,7 @@ data:
             "gridPos": {"x": 0, "y": 16, "w": 6, "h": 4},
             "targets": [
               {
-                "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"{{ values.name }}\"})",
+                "expr": "sum(kube_pod_container_status_restarts_total{namespace=\"${{ values.name }}\"})",
                 "legendFormat": "Restarts"
               }
             ]
@@ -74,7 +74,7 @@ data:
             "gridPos": {"x": 6, "y": 16, "w": 6, "h": 4},
             "targets": [
               {
-                "expr": "kube_deployment_status_replicas_available{namespace=\"{{ values.name }}\"}",
+                "expr": "kube_deployment_status_replicas_available{namespace=\"${{ values.name }}\"}",
                 "legendFormat": "Available"
               }
             ]
@@ -85,7 +85,7 @@ data:
             "gridPos": {"x": 0, "y": 20, "w": 12, "h": 8},
             "targets": [
               {
-                "expr": "pg_stat_activity_count{namespace=\"{{ values.name }}\"}",
+                "expr": "pg_stat_activity_count{namespace=\"${{ values.name }}\"}",
                 "legendFormat": "Active Connections"
               }
             ]
@@ -96,7 +96,7 @@ data:
             "gridPos": {"x": 12, "y": 20, "w": 12, "h": 8},
             "targets": [
               {
-                "expr": "{namespace=\"{{ values.name }}\",app=\"{{ values.name }}\"}"
+                "expr": "{namespace=\"${{ values.name }}\",app=\"${{ values.name }}\"}"
               }
             ]
           }
